@@ -13,6 +13,20 @@
     tone: string;
   };
 
+  type ApiCalendarEvent = {
+    id?: string;
+    title: string;
+    detail: string;
+    start: string;
+    end: string;
+  };
+
+  type CalendarResponse = {
+    connected?: boolean;
+    error?: string;
+    events?: ApiCalendarEvent[];
+  };
+
   function getMonday(date: Date) {
     const monday = new Date(date);
     const day = monday.getDay();
@@ -54,7 +68,7 @@
   let eventDialog: HTMLDialogElement;
   let eventDraft = $state({ title: '', day: '1', start: '08:00', duration: '1' });
 
-  function toGridEvent(event: { id?: string; title: string; detail: string; start: string; end: string }, index: number): CalendarEvent | null {
+  function toGridEvent(event: ApiCalendarEvent, index: number): CalendarEvent | null {
     const start = new Date(event.start);
     const end = new Date(event.end);
     const day = start.getDay() === 0 ? 7 : start.getDay();
@@ -72,10 +86,12 @@
       const requestedWeekStart = getMonday(anchorDate);
       const requestedWeekEnd = new Date(requestedWeekStart.getTime() + 7 * 86400000);
       const response = await fetch(`/api/calendar?timeMin=${encodeURIComponent(requestedWeekStart.toISOString())}&timeMax=${encodeURIComponent(requestedWeekEnd.toISOString())}`);
-      const data = await response.json();
+      const data: CalendarResponse = await response.json();
       connected = data.connected;
       loadError = data.error ?? '';
-      events = (data.events ?? []).map(toGridEvent).filter((event): event is CalendarEvent => event !== null);
+      events = (data.events ?? [])
+        .map(toGridEvent)
+        .filter((event): event is CalendarEvent => event !== null);
     } catch {
       loadError = 'Unable to reach the calendar service.';
     }
