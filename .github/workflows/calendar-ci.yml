@@ -56,6 +56,9 @@ jobs:
       - name: Install test dependencies
         run: npm ci
 
+      - name: Install app dependencies for the web server
+        run: npm ci --prefix ../website-dev
+
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
