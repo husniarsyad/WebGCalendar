@@ -41,3 +41,9 @@ Every push to `main` and every pull request runs:
 4. Screenshot, trace, and failure artifact upload.
 
 Open the workflow run in GitHub and download `playwright-report` to inspect the automation result.
+
+After a successful push to `main`, the `Publish automation report` job also publishes the HTML report to the repository's GitHub Pages URL shown in the workflow summary. The report includes the step screenshots.
+
+## Hosting the connected website
+
+GitHub Pages can host static files only. This app uses server-side Google OAuth and Calendar API routes, so the connected website must run on a server-capable host. Use the GitHub repository as the source for a Render, Railway, or Vercel deployment and configure the Google OAuth environment variables there. GitHub Actions still checks and builds the app on every push.
