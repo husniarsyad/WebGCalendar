@@ -42,7 +42,7 @@ Every push to `main` and every pull request runs:
 
 Open the workflow run in GitHub and download `playwright-report` to inspect the automation result.
 
-After a successful push to `main`, the `Publish automation report` job also publishes the HTML report to the repository's GitHub Pages URL shown in the workflow summary. The report includes the step screenshots.
+After a successful push to `main`, the `Publish automation report` job publishes only the Playwright HTML report and its step screenshots to the repository's GitHub Pages URL shown in the workflow summary. The repository README and Weeklight app are not part of the Pages upload.
 
 ## Hosting the connected website
 
