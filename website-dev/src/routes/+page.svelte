@@ -87,7 +87,7 @@
       const requestedWeekEnd = new Date(requestedWeekStart.getTime() + 7 * 86400000);
       const response = await fetch(`/api/calendar?timeMin=${encodeURIComponent(requestedWeekStart.toISOString())}&timeMax=${encodeURIComponent(requestedWeekEnd.toISOString())}`);
       const data: CalendarResponse = await response.json();
-      connected = data.connected;
+      connected = data.connected ?? false;
       loadError = data.error ?? '';
       events = (data.events ?? [])
         .map(toGridEvent)
