@@ -9,6 +9,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  pull-requests: write
 
 jobs:
   app:
@@ -84,6 +85,44 @@ jobs:
           path: automation-testing/test-results/
           if-no-files-found: warn
           retention-days: 14
+
+      - name: Add automation result to summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Website automation"
+            echo ""
+            echo "Playwright tests completed with status: **${{ job.status }}**"
+            echo ""
+            echo "The full HTML report and step screenshots are available in the playwright-report and playwright-test-results workflow artifacts."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  comment-result:
+    name: Comment automation result
+    runs-on: ubuntu-latest
+    needs: e2e
+    if: always() && github.event_name == 'pull_request'
+    steps:
+      - name: Comment on pull request
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const status = '${{ needs.e2e.result }}';
+            const body = [
+              '## Website automation result',
+              '',
+              `Playwright status: **${status}**`,
+              '',
+              'The website check/build runs separately. The HTML report and screenshots are available in this workflow run under **Artifacts**.'
+            ].join('\\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });
 
   publish-report:
     name: Publish automation report
